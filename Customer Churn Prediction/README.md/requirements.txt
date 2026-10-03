@@ -1,0 +1,88 @@
+# Telco Customer Churn Prediction
+
+A machine learning project that predicts whether a telecom customer will leave (churn), using the IBM Telco Customer Churn dataset. The notebook compares seven classifiers with cross-validation, tunes the best one with grid search, and exports the final model.
+
+## Dataset
+
+- **Source:** [Telco Customer Churn on Kaggle](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) (IBM sample data)
+- **Size:** 7,043 customers, 21 columns (customer demographics, subscribed services, account and billing info)
+- **Target:** `Churn` (Yes/No)
+- **Class balance:** about 73.5% stayed, 26.5% churned (imbalanced)
+
+The dataset is not included in this repository. Download it and place the CSV at `Data/WA_Fn-UseC_-Telco-Customer-Churn.csv`.
+
+## Approach
+
+1. **Preprocessing:** drop `customerID`, encode categorical columns, 80/20 train/test split
+2. **Baseline:** majority-class `DummyClassifier` (73.4% accuracy) to show what any real model has to beat
+3. **Model comparison:** 5-fold cross-validation on the training set, with scaling inside a scikit-learn `Pipeline` so no information leaks between folds
+4. **Tuning:** `GridSearchCV` (scored on F1) on the best model from step 3
+5. **Evaluation:** confusion matrix on the held-out test set
+6. **Export:** best pipeline saved with `joblib`
+
+### Models compared
+
+Logistic Regression, KNN, SVM (RBF), Decision Tree, Random Forest, Gradient Boosting, XGBoost
+
+## Results
+
+5-fold cross-validation accuracy on the training set:
+
+| Model               | CV accuracy |
+|---------------------|-------------|
+| Logistic Regression | 0.8042      |
+| Gradient Boosting   | 0.8026      |
+| XGBoost             | 0.7987      |
+| SVM (RBF)           | 0.7973      |
+| Random Forest       | 0.7904      |
+| KNN                 | 0.7542      |
+| Decision Tree       | 0.7268      |
+| *Baseline (majority class)* | *0.7339* |
+
+Logistic Regression was selected and tuned (best `C = 0.1`, CV F1 = 0.5927).
+
+> Accuracy alone is misleading on imbalanced data, so the F1 score for the churn class is the more informative metric here.
+
+## Project structure
+
+```
+.
+├── Data/                 # place the Kaggle CSV here (not tracked)
+├── notebooks/
+│   └── churn_analysis.ipynb
+├── requirements.txt
+└── README.md
+```
+
+## How to run
+
+```bash
+git clone https://github.com/<your-username>/<your-repo>.git
+cd <your-repo>
+pip install -r requirements.txt
+jupyter notebook notebooks/churn_analysis.ipynb
+```
+
+`requirements.txt`:
+
+```
+numpy
+pandas
+matplotlib
+seaborn
+scikit-learn
+xgboost
+joblib
+jupyter
+```
+
+## Limitations and next steps
+
+- Add feature-importance / coefficient analysis to explain which factors drive churn
+- Report precision, recall, ROC-AUC and PR-AUC on the test set
+- Try class weighting or resampling to improve recall on churners
+- Tune the decision threshold according to the cost of losing a customer versus the cost of a retention offer
+
+## License
+
+MIT (add a `LICENSE` file if you want to publish under this license).
