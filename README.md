@@ -83,6 +83,3 @@ jupyter
 - Try class weighting or resampling to improve recall on churners
 - Tune the decision threshold according to the cost of losing a customer versus the cost of a retention offer
 
-## License
-
-MIT (add a `LICENSE` file if you want to publish under this license).
